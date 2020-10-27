@@ -12,5 +12,9 @@
   "scripts": {
     "test": "mocha test",
     "test:debug": "mocha --inspect-brk test"
+  },
+  "volta": {
+    "node": "14.15.0",
+    "yarn": "1.22.10"
   }
 }

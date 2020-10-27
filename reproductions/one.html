@@ -40,6 +40,7 @@
   document.body.appendChild(textarea);
   // \ main setup
   
+  // logging
   for (const element of [input, select, textarea]) {
     // does not fire without "hack", even when input values change
     element.addEventListener('change', (e) => {
@@ -55,7 +56,7 @@
     console.log(` - [textarea].value === '${textarea.value}'`);
 
   }
-  // logging
+
   console.log('script')
   debug();
   // \ logging

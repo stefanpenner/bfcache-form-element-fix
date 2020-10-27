@@ -148,61 +148,64 @@ describe("reproduction", function () {
     await chrome.dispose();
   });
 
-  describe('no-fix', function() {
-    it("expects no input event for BFCache populated value", async function () {
-      await navigateTo(page, `${URL}/reproductions/one.html`);
-      await updateInputValue(page);
+  // we are iterating through /reproductions/one and reproductions/two
+  for (const scenario of ['one', 'two']) {
+    describe(`./reproductions/${scenario} no-fix`, function() {
+      it("expects no input event for BFCache populated value", async function () {
+        await navigateTo(page, `${URL}/reproductions/${scenario}.html`);
+        await updateInputValue(page);
 
-      // grab the history details so we can navigate forwards/backwards
-      const history = await page.send("Page.getNavigationHistory");
+        // grab the history details so we can navigate forwards/backwards
+        const history = await page.send("Page.getNavigationHistory");
 
-      await pressBack(page, history)
+        await pressBack(page, history)
 
-      const LOGS = [];
-      // subscribe to logging
-      page.on('Runtime.consoleAPICalled', e => {
-        if (e.type === 'log') {
-          LOGS.push(e)
-        }
+        const LOGS = [];
+        // subscribe to logging
+        page.on('Runtime.consoleAPICalled', e => {
+          if (e.type === 'log') {
+            LOGS.push(e)
+          }
+        });
+
+        await pressForward(page, history);
+        expect(await getInputsValue(page)).to.eql('P'); // BFCache has populated this `P`
+        // this assertion makes sense the input actually did fire
+        expect(LOGS.flatMap(x => x.args.map(x => x.value))).to.not.include(
+          'CHANGE: INPUT did changed'
+        );
       });
-
-      await pressForward(page, history);
-      expect(await getInputsValue(page)).to.eql('P'); // BFCache has populated this `P`
-      // this assertion makes sense the input actually did fire
-      expect(LOGS.flatMap(x => x.args.map(x => x.value))).to.not.include(
-        'CHANGE: INPUT did changed'
-      );
     });
-  });
 
-  describe('with-fix', function() {
-    it("expects input event for BFCache populated value", async function () {
-      await navigateTo(page, `http://localhost:48888/reproductions/one-fixed.html`);
-      await updateInputValue(page);
+    describe(`./reproductions/${scenario}-fixed.html with-fix`, function() {
+      it("expects input event for BFCache populated value", async function () {
+        await navigateTo(page, `http://localhost:48888/reproductions/${scenario}-fixed.html`);
+        await updateInputValue(page);
 
-      // grab the history details so we can navigate forwards/backwards
-      const history = await page.send("Page.getNavigationHistory");
+        // grab the history details so we can navigate forwards/backwards
+        const history = await page.send("Page.getNavigationHistory");
 
-      await pressBack(page, history)
+        await pressBack(page, history)
 
-      const LOGS = [];
-      // subscribe to logging
-      page.on('Runtime.consoleAPICalled', e => {
-        if (e.type === 'log') {
-          LOGS.push(e)
-        }
+        const LOGS = [];
+        // subscribe to logging
+        page.on('Runtime.consoleAPICalled', e => {
+          if (e.type === 'log') {
+            LOGS.push(e)
+          }
+        });
+
+        await pressForward(page, history);
+        expect(await getInputsValue(page)).to.eql('P'); // BFCache has populated this `P`
+        // this assertion makes sense the input actually did fire
+        debugger;
+        expect(LOGS.flatMap(x => x.args.map(x => x.value))).to.include(
+          'CHANGE: INPUT did changed'
+        );
       });
-
-      await pressForward(page, history);
-      expect(await getInputsValue(page)).to.eql('P'); // BFCache has populated this `P`
-      // this assertion makes sense the input actually did fire
-      expect(LOGS.flatMap(x => x.args.map(x => x.value))).to.include(
-        'CHANGE: INPUT did changed'
-      );
     });
-  });
+  }
 });
-
 
 async function updateInputValue(page) {
   const DOM = await page.send("DOM.getDocument");

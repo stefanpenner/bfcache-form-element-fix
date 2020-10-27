@@ -9,16 +9,16 @@ export default async function hack(
   }
 
   return new Promise((resolve, reject) => {
+    const elementsToDiff = getElementAndItsInitialState(window.document);
     window.document.addEventListener("readystatechange", () => {
       try {
-        if (window.document.readyState === "complete") {
-          const elementsToDiff = getElementAndItsInitialState(window.document);
-
+        if (window.document.readyState === 'complete') {
           setTimeout(() => {
             try {
               for (const element of needsChangeEvent(
                 __hookToSimulateBFCache(elementsToDiff)
               )) {
+                console.log('dispatch', element)
                 // TODO: this likely needs to be more comphrensive
                 element.dispatchEvent(new window.Event("change"));
               }
@@ -27,6 +27,19 @@ export default async function hack(
               reject(e);
             }
           });
+        } else {
+          for (const [element, previous] of __hookToSimulateBFCache(getElementAndItsInitialState(window.document))) {
+            if (elementsToDiff.find(pair => pair[0] === element)) {
+              continue;
+            }
+
+            elementsToDiff.push([
+              element,
+              previous
+            ])
+          }
+          // TODO: it may be possible to see new elements here that must be merged with elementsToDiff,
+          // deferring to elements initial states that already exist
         }
       } catch (e) {
         reject(e);
@@ -40,7 +53,7 @@ export function shouldAttemptHack(window) {
     typeof window.performance === "object" &&
     window.performance !== null &&
     typeof window.performance.navigation === "object" &&
-    typeof window.performance.navigation === null &&
+    typeof window.performance.navigation !== null &&
     window.performance.navigation.type === 2 &&
     window.document.readyState === "complete"
   );
@@ -76,7 +89,7 @@ export function needsChangeEvent(input) {
         break;
       }
       case "SELECT": {
-        if (element.selectionIndex !== value) {
+        if (element.selectedIndex !== value) {
           changed.push(element);
         }
         break;

@@ -1,0 +1,60 @@
+<div></div>
+<script>
+  // logging
+  document.addEventListener('readystatechange', async () => {
+    const state = document.readyState
+    console.log(`readyState === ${state}`)
+    debug();
+
+    requestAnimationFrame(() => {
+      console.log(`readyState === ${state} + requestAnimationFrame`);
+      debug();
+    });
+
+    setTimeout(() => {
+      console.log(`readyState === ${state} + setTimeout`);
+      debug();
+    })
+    await Promise.resolve();
+    console.log(`readyState === ${state} + await`);
+    debug();
+  });
+  // \ logging
+
+  const select = document.createElement('select');
+  for (const count of [1,2,3,4]) {
+    const option = document.createElement('option');
+    option.textContent = `Option: ${count}`
+    if (count === 2) {
+      option.selected = true;
+    }
+    select.appendChild(option);
+  }
+
+  const input = document.createElement('input');
+  const textarea = document.createElement('textarea');
+
+  document.body.appendChild(select);
+  document.body.appendChild(input);
+  document.body.appendChild(textarea);
+
+  for (const element of [input, select, textarea]) {
+    // does not fire without "hack", even when input values change
+    element.addEventListener('change', (e) => {
+      console.log(`${element.tagName} did changed`);
+      debug();
+    });
+  }
+
+  function debug() {
+    console.log(' - [select]', [...select.children].map(({ selected }, index) => selected ? `${index} SELECTED` : `${index}`));
+    console.log(` - [input].value === '${input.value}'`);
+    console.log(` - [textarea].value === '${textarea.value}'`);
+  }
+
+  // logging
+  console.log('script')
+  debug();
+  // \ logging
+</script>
+<div></div>

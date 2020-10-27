@@ -1,0 +1,16 @@
+{
+  "name": "bfcache-form-element-fix",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "dependencies": {},
+  "devDependencies": {
+    "chai": "^4.2.0",
+    "jsdom": "^16.4.0",
+    "mocha": "^8.2.0"
+  },
+  "scripts": {
+    "test": "mocha test",
+    "test:debug": "mocha --inspect-brk test"
+  }
+}

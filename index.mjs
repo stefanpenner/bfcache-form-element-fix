@@ -1,6 +1,6 @@
 "use strict";
 
-module.exports = async function hack(
+export default async function hack(
   window,
   __hookToSimulateBFCache = (input) => input
 ) {
@@ -34,8 +34,7 @@ module.exports = async function hack(
   });
 };
 
-module.exports.shouldAttemptHack = shouldAttemptHack;
-function shouldAttemptHack(window) {
+export function shouldAttemptHack(window) {
   return (
     typeof window.performance === "object" &&
     window.performance !== null &&
@@ -46,8 +45,7 @@ function shouldAttemptHack(window) {
   );
 }
 
-module.exports.getElementAndItsInitialState = getElementAndItsInitialState;
-function getElementAndItsInitialState(document) {
+export function getElementAndItsInitialState(document) {
   const elements = [];
 
   for (const element of document.getElementsByTagName("input")) {
@@ -65,8 +63,7 @@ function getElementAndItsInitialState(document) {
   return elements;
 }
 
-module.exports.needsChangeEvent = needsChangeEvent;
-function needsChangeEvent(input) {
+export function needsChangeEvent(input) {
   const changed = [];
   for (const [element, value] of input) {
     switch (element.tagName) {

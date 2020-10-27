@@ -12,14 +12,14 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const { spawnChrome } = cdc;
 const { expect } = chai;
 
-function HTML(string) {
+function DOM(string) {
   return new jsdom.JSDOM(string).window;
 }
 
 describe("hack", function () {
 
   it("no events, if nothing went wrong", async function () {
-    const window = HTML`
+    const window = DOM`
     <div></div>
     <input>
     <div></div>
@@ -41,7 +41,7 @@ describe("hack", function () {
   });
 
   it("events are emitted of BFCache did a thing", async function () {
-    const window = HTML`
+    const window = DOM`
     <div></div>
     <input>
     <div></div>
@@ -73,7 +73,7 @@ describe("hack", function () {
 describe("getElementAndItsInitialState", function () {
   it("works", function () {
     const initialState = getElementAndItsInitialState(
-      new jsdom.JSDOM(`
+      DOM`
     <div></div>
     <input>
     <div></div>
@@ -82,7 +82,7 @@ describe("getElementAndItsInitialState", function () {
     <textarea></textarea>
     <span></span>
     <label></label>
-    `).window.document
+    `.document
     );
 
     expect(initialState.length).to.eql(3);
@@ -99,11 +99,11 @@ describe("getElementAndItsInitialState", function () {
 
 describe("needsChangeEvent", function () {
   it("works", function () {
-    const dom = new jsdom.JSDOM(`
+    const dom = DOM`
     <input>
     <select><option></option><option></option></select>
     <textarea></textarea>
-    `);
+    `;
     const input = dom.window.document.getElementsByTagName("input")[0];
     const textarea = dom.window.document.getElementsByTagName("textarea")[0];
     const select = dom.window.document.getElementsByTagName("select")[0];

@@ -21,6 +21,7 @@
   });
   // \ logging
 
+  // main setup
   const select = document.createElement('select');
   for (const count of [1,2,3,4]) {
     const option = document.createElement('option');
@@ -37,7 +38,8 @@
   document.body.appendChild(select);
   document.body.appendChild(input);
   document.body.appendChild(textarea);
-
+  // \ main setup
+  
   for (const element of [input, select, textarea]) {
     // does not fire without "hack", even when input values change
     element.addEventListener('change', (e) => {

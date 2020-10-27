@@ -122,3 +122,106 @@ describe("needsChangeEvent", function () {
     ).to.eql([]);
   });
 });
+
+describe("reproduction", function () {
+  this.timeout(300_000);
+  const { spawnChrome } = require("chrome-debugging-client");
+  it("works", async function () {
+    const chrome = spawnChrome({
+      headless: true
+    });
+    try {
+      const browser = chrome.connection;
+
+      const { targetId } = await browser.send("Target.createTarget", {
+        url: "about:blank",
+      });
+
+      const page = await browser.attachToTarget(targetId);
+      // enable events for Page domain
+      await page.send("Page.enable");
+      await page.send("Runtime.enable");
+
+      {
+        // navigate to reproduction
+        await Promise.all([
+          page.until("Page.loadEventFired"),
+          page.send("Page.navigate", {
+            url: `file://${__dirname}/reproductions/one.html`,
+          }),
+        ]);
+      }
+
+      // update input's value
+      {
+        const DOM = await page.send("DOM.getDocument");
+        const input = await page.send("DOM.querySelector", {
+          nodeId: DOM.root.nodeId,
+          selector: "input",
+        });
+        await page.send('DOM.focus', {
+          nodeId: input.nodeId,
+        });
+
+        await page.send('Input.dispatchKeyEvent', {
+          type: "keyDown",
+          text: "P"
+        });
+        await page.send('Input.dispatchKeyEvent', {
+          type: "keyUp",
+          text: "P"
+        });
+      }
+
+      // grab the history details so we can navigate forwards/backwards
+      const history = await page.send("Page.getNavigationHistory");
+
+      // "press the back button"
+      {
+        await Promise.all([
+          page.until("Page.loadEventFired"),
+          page.send("Page.navigateToHistoryEntry", {
+            entryId: history.entries[0].id
+          })
+        ]);
+      }
+
+      // "press the forward button"
+
+      {
+        // subscribe to logging
+        await Promise.all([
+          page.until("Page.loadEventFired"),
+          page.send("Page.navigateToHistoryEntry", {
+            entryId: history.entries[1].id
+          })
+        ]);
+      }
+
+      // grab the inputs value, ensure it is restored back to P.
+      {
+        const DOM = await page.send("DOM.getDocument");
+        const input = await page.send("DOM.querySelector", {
+          nodeId: DOM.root.nodeId,
+          selector: "input",
+        });
+
+        const value = await page.send('DOM.resolveNode', {
+          nodeId: input.nodeId
+        });
+        const objectId = value.object.objectId;
+        const properties = await page.send('Runtime.getProperties', {
+          objectId,
+          generatePreview: true
+        });
+        const inputValue = properties.result.filter(x => x.name === 'value')[0].value.value;
+
+        expect(inputValue).to.eql('P');
+      }
+
+      // assert logging
+    } finally {
+      await chrome.dispose();
+    }
+  });
+});

@@ -19,6 +19,7 @@ export default async function hack(
               for (const element of needsChangeEvent(
                 __hookToSimulateBFCache(elementsToDiff)
               )) {
+                // TODO: this likely needs to be more comphrensive
                 element.dispatchEvent(new window.Event("change"));
               }
               resolve();

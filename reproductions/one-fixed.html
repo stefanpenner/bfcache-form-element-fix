@@ -35,14 +35,16 @@
     }
     select.appendChild(option);
   }
-
+  // main
   const input = document.createElement('input');
   const textarea = document.createElement('textarea');
 
   document.body.appendChild(select);
   document.body.appendChild(input);
   document.body.appendChild(textarea);
+  // \ main
 
+  // logging
   for (const element of [input, select, textarea]) {
     // does not fire without "hack", even when input values change
     element.addEventListener('change', (e) => {
@@ -58,7 +60,7 @@
     console.log(` - [textarea].value === '${textarea.value}'`);
 
   }
-  // logging
+
   console.log('script')
   debug();
   // \ logging

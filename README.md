@@ -1,5 +1,7 @@
 # BFCache Form Element Fix ![CI](https://github.com/stefanpenner/bfcache-form-element-fix/workflows/CI/badge.svg)
 
+* [Corresponding Chrome issue](https://bugs.chromium.org/p/chromium/issues/detail?id=1143298)
+
 BFCache in chrome (as of <???>) may update form elements state without
 emitting the corresponding change events, this can lead to broken form logic.
 
@@ -48,6 +50,12 @@ This repo aims to provide both a reproduction, and a possible workaround.
 
 ## Next Steps
 
+* wait for feedback from chrome implementors
 * improve reproductions, to ensure they convey if the browser is affected more clearly
 * Further testing & analysis is required to know the viability of workaround
-* Investigate other browsers (Safari appears affected, but i need to confirm others etc)
+* Investigate other browsers. Safari appears affected, but i need to confirm others etc. Afterwhich corresponding bugs should be opened.
+
+## What's in the repo
+* [reproductions](https://github.com/stefanpenner/bfcache-form-element-fix/tree/main/reproductions)
+* [tests for the workaround](https://github.com/stefanpenner/bfcache-form-element-fix/blob/main/test.mjs)
+* [tests for the reproduction on chrome](https://github.com/stefanpenner/bfcache-form-element-fix/blob/main/test.mjs#L136-L208)

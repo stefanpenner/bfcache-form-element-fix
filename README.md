@@ -18,6 +18,8 @@ BFCache application can cause UI and DOM state can become out of sync.
 For example, if we have form with dependent selects (the value of the primary select, changes the secondary select).
 If a user updates `select#primary` to "Two", the `select#seconary` will be rendered. If at that point the user presses the "back button", followed by the "forwards button" they will end with `select#primary` having selected with "Two" but the `select#secondary` will not have been rendered.
 
+Illustrating the example with some templates.
+
 ```html
 <select id="primary" {{on "change" this.updateSelected}}>
   <option> One </option>

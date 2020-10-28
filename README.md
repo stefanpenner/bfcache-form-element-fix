@@ -46,6 +46,8 @@ Which can result in the UI becoming out-of-sync with the backing data.
 
 This repo aims to provide both a reproduction, and a possible workaround.
 
-## Usage:
+## Next Steps
 
-## Steps to reproduce:
+* improve reproductions, to ensure they convey if the browser is affected more clearly
+* Further testing & analysis is required to know the viability of workaround
+* Investigate other browsers (Safari appears affected, but i need to confirm others etc)

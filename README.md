@@ -45,7 +45,6 @@ Which can result in the UI becoming out-of-sync with the backing data.
 * the page may begin life without the `input` containing `"foo"` but around `readyState === 'complete'` the cached value from BFCache is applied.
 
 
-
 This repo aims to provide both a reproduction, and a possible workaround.
 
 ## Next Steps
@@ -54,6 +53,22 @@ This repo aims to provide both a reproduction, and a possible workaround.
 * improve reproductions, to ensure they convey if the browser is affected more clearly
 * Further testing & analysis is required to know the viability of workaround
 * Investigate other browsers. Safari appears affected, but i need to confirm others etc. Afterwhich corresponding bugs should be opened.
+
+## Workarounds:
+
+1) trigger the browsers "don't leave the page you will lose data" scenario to prevent issues.
+
+```js
+// add when inputs have state we want to avoid
+const handler = (event) => {
+  event.returnValue = 'Changes you made may not be saved.';
+};
+
+window.addEventListener('beforeunload', handler);
+window.removeEventListener('beforeunload', handler);
+```
+
+2) hacky POC workaround: https://github.com/stefanpenner/bfcache-form-element-fix/blob/main/index.mjs
 
 ## What's in the repo
 * [reproductions](https://github.com/stefanpenner/bfcache-form-element-fix/tree/main/reproductions)
